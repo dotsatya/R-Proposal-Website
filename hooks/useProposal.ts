@@ -21,8 +21,6 @@ export function useProposal() {
         case "welcome":
           return "trust";
         case "trust":
-          return "love";
-        case "love":
           return "proposal";
         case "proposal":
           return "gallery";

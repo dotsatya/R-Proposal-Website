@@ -117,9 +117,18 @@ export const proposalConfig: ProposalConfig = {
 
   // Screen 5: Couple Graphics Coverflow Gallery
   coupleGraphics: [
-    { src: "/images/couple-night.jpg", alt: "Starry night picnic cuddled together" },
-    { src: "/images/couple-meadow.jpg", alt: "Sitting hand-in-hand in sunlit meadow under the tree" },
-    { src: "/images/couple-sunset.jpg", alt: "Golden sunset walk by the ocean waves" }
+    {
+      src: "/images/couple-night.jpg",
+      alt: "Starry night picnic cuddled together",
+    },
+    {
+      src: "/images/couple-meadow.jpg",
+      alt: "Sitting hand-in-hand in sunlit meadow under the tree",
+    },
+    {
+      src: "/images/couple-sunset.jpg",
+      alt: "Golden sunset walk by the ocean waves",
+    },
   ],
   coupleGallerySubtitle: "Now for the most important part...",
   coupleGalleryButton: "See My Message",
@@ -134,12 +143,12 @@ export const proposalConfig: ProposalConfig = {
   // Screen 7: Heartfelt Letter
   letterCatImage: "/images/heart-crown-cat.png",
   letterParagraph1:
-    "I keep coming back to you because what I feel for you isn't just a simple liking. I believe there's something much deeper in my heart for you. Even after you said no, I still tried to reach out because my feelings for you are genuine.",
+    "I keep coming back to you Abhishweta cause what I feel for you isn't just a simple liking.",
   letterParagraph2:
-    "I truly love you, and this isn't just some temporary attraction that will disappear if you reject me. It's not like I'll simply give up and start trying with someone else just because you said no.",
+    " I believe there's something much deeper in my heart for you. Even after you said no, I still tried to reach out because my feelings for you are genuine.",
   letterHighlight: "Attraction and love are not the same thing.",
   letterParagraph3:
-    "In your eyes, I found my home. In your heart, I found my love. In your soul, I found my forever. You complete me in ways words could never express. Every sunrise reminds me of your warmth, and every star reminds me of the sparkle in your eyes.",
+    "I truly love you, and this isn't just some temporary attraction that will disappear if you reject me. It's not like I'll simply give up and start trying with someone else just because you said no.",
   letterButton: "Yes, I'm Yours Forever! ♥",
 
   // Screen 8: Celebration Screen
@@ -152,5 +161,5 @@ export const proposalConfig: ProposalConfig = {
 
   // Audio Configuration
   music: "/audio/proposal_music.mp3",
-  musicFallback: "/audio/proposal_music.mp3"
+  musicFallback: "/audio/proposal_music.mp3",
 };

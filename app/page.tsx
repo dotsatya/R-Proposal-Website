@@ -7,7 +7,6 @@ import { FloatingHearts } from "@/components/proposal/FloatingHearts";
 import { MusicControl } from "@/components/proposal/MusicControl";
 import { WelcomeScreen } from "@/components/proposal/WelcomeScreen";
 import { TrustQuestion } from "@/components/proposal/TrustQuestion";
-import { LoveConfirmation } from "@/components/proposal/LoveConfirmation";
 import { FinalProposal } from "@/components/proposal/FinalProposal";
 import { CoupleGallery } from "@/components/proposal/CoupleGallery";
 import { SpecialMessage } from "@/components/proposal/SpecialMessage";
@@ -66,20 +65,6 @@ export default function Home() {
               className="w-full flex-1 flex items-center justify-center"
             >
               <TrustQuestion onYes={nextStep} />
-            </motion.div>
-          )}
-
-          {/* Screen 3: Love Confirmation (Kitten with Flowers) */}
-          {currentStep === "love" && (
-            <motion.div
-              key="love"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.5 }}
-              className="w-full flex-1 flex items-center justify-center"
-            >
-              <LoveConfirmation onYes={nextStep} />
             </motion.div>
           )}
 
