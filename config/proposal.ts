@@ -151,6 +151,6 @@ export const proposalConfig: ProposalConfig = {
   celebrationReplayButton: "Replay All",
 
   // Audio Configuration
-  music: "/audio/romantic-music.mp3",
-  musicFallback: "/audio/romantic-music.mp3"
+  music: "/audio/proposal_music.mp3",
+  musicFallback: "/audio/proposal_music.mp3"
 };

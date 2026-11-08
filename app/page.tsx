@@ -159,10 +159,10 @@ export default function Home() {
         </AnimatePresence>
       </div>
 
-      {/* Bottom Subtle Signature */}
-      <footer className="relative z-10 py-1.5 text-center text-[10px] xs:text-xs text-rose-300/40 font-light select-none tracking-wider">
-        <span>Handcrafted with endless love ❤️</span>
-      </footer>
+      {/* Bottom Right Watermark */}
+      <div className="fixed bottom-[max(0.6rem,env(safe-area-inset-bottom))] right-[max(0.75rem,env(safe-area-inset-right))] z-40 pointer-events-none select-none text-[10px] xs:text-[11px] font-medium text-rose-300/60 tracking-wider drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)]">
+        <span>created by RANAJIT</span>
+      </div>
     </main>
   );
 }
