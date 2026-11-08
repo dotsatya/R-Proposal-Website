@@ -41,7 +41,7 @@ export function TrustQuestion({ onYes }: TrustQuestionProps) {
   return (
     <div className="relative z-10 flex w-full flex-col items-center justify-center px-4 py-2 sm:py-6 text-center select-none">
       {/* Background Ambient Glow - softened */}
-      <div className="pointer-events-none absolute top-1/3 left-1/2 -translate-x-1/2 h-[220px] w-[220px] sm:h-[340px] sm:w-[340px] rounded-full bg-[#ff337e]/12 blur-[80px]" />
+      <div className="pointer-events-none absolute top-1/3 left-1/2 -translate-x-1/2 h-[220px] w-[220px] sm:h-[340px] sm:w-[340px] rounded-full bg-[#ff337e]/07 blur-[80px]" />
 
       <motion.div
         initial={{ opacity: 0, scale: 0.94 }}

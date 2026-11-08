@@ -13,7 +13,7 @@ export function HeartfeltLetter({ onNext }: HeartfeltLetterProps) {
   return (
     <div className="relative z-10 flex w-full flex-col items-center justify-center px-2 xs:px-4 py-2 sm:py-6 text-center select-none overflow-x-hidden">
       {/* Background Ambient Glow - softened */}
-      <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[260px] w-[260px] sm:h-[450px] sm:w-[450px] rounded-full bg-[#ff2e7e]/12 blur-[90px]" />
+      <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[260px] w-[260px] sm:h-[450px] sm:w-[450px] rounded-full bg-[#ff2e7e]/07 blur-[90px]" />
 
       <motion.div
         initial={{ opacity: 0, scale: 0.94 }}

@@ -87,7 +87,7 @@ export function CoupleGallery({ onNext }: CoupleGalleryProps) {
   return (
     <div className="relative z-10 flex w-full flex-col items-center justify-center px-2 xs:px-4 py-2 sm:py-6 text-center select-none overflow-x-hidden">
       {/* Background Soft Purple/Rose Halo - softened */}
-      <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[260px] w-[260px] sm:h-[420px] sm:w-[420px] rounded-full bg-[#ff2e7e]/10 blur-[85px]" />
+      <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[260px] w-[260px] sm:h-[420px] sm:w-[420px] rounded-full bg-[#ff2e7e]/06 blur-[85px]" />
 
       <motion.div
         initial={{ opacity: 0, scale: 0.94 }}
