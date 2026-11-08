@@ -6,69 +6,13 @@ import { proposalConfig } from "@/config/proposal";
 export function useAudio() {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isMuted, setIsMuted] = useState<boolean>(false);
-  const [hasInteracted, setHasInteracted] = useState<boolean>(false);
   const [audioError, setAudioError] = useState<string | null>(null);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const synthCtxRef = useRef<AudioContext | null>(null);
-  const synthTimerRef = useRef<number | null>(null);
+  const userPausedRef = useRef<boolean>(false);
+  const isMutedRef = useRef<boolean>(false);
 
-  // Fallback procedural soft romantic chime synthesizer in case HTML5 audio fails
-  const startFallbackSynth = useCallback(() => {
-    try {
-      if (typeof window === "undefined") return;
-      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-      if (!AudioCtx) return;
-
-      if (!synthCtxRef.current) {
-        synthCtxRef.current = new AudioCtx();
-      }
-      const ctx = synthCtxRef.current;
-      if (ctx.state === "suspended") {
-        ctx.resume();
-      }
-
-      const notes = [261.63, 329.63, 392.0, 523.25, 493.88, 392.0, 329.63, 293.66]; // C, E, G, C5, B, G, E, D
-      let noteIdx = 0;
-
-      if (synthTimerRef.current) window.clearInterval(synthTimerRef.current);
-
-      synthTimerRef.current = window.setInterval(() => {
-        if (!ctx || ctx.state !== "running") return;
-        const now = ctx.currentTime;
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(notes[noteIdx % notes.length], now);
-        noteIdx++;
-
-        gain.gain.setValueAtTime(0, now);
-        gain.gain.linearRampToValueAtTime(0.08, now + 0.05);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.4);
-
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-
-        osc.start(now);
-        osc.stop(now + 1.5);
-      }, 700);
-    } catch {
-      // Ignore synth errors
-    }
-  }, []);
-
-  const stopFallbackSynth = useCallback(() => {
-    if (synthTimerRef.current) {
-      window.clearInterval(synthTimerRef.current);
-      synthTimerRef.current = null;
-    }
-    if (synthCtxRef.current && synthCtxRef.current.state === "running") {
-      synthCtxRef.current.suspend();
-    }
-  }, []);
-
-  // Initialize HTML5 Audio safely
+  // Initialize Audio once on client mount
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -76,24 +20,22 @@ export function useAudio() {
     audio.src = proposalConfig.music;
     audio.loop = true;
     audio.preload = "auto";
-    audio.volume = 0.55;
+    audio.volume = 0.65;
+    audio.muted = isMutedRef.current;
 
     const handlePlay = () => setIsPlaying(true);
     const handlePause = () => setIsPlaying(false);
-    const handleError = () => {
-      // If .mp3 fails, try fallback
-      if (audio.src.includes(".mp3") && proposalConfig.musicFallback) {
+    const handleError = (e: Event) => {
+      console.warn("Audio loading error:", e);
+      // Try fallback if defined and different
+      if (proposalConfig.musicFallback && audio.src !== proposalConfig.musicFallback) {
         audio.src = proposalConfig.musicFallback;
         audio.load();
-        if (hasInteracted) {
-          audio.play().catch(() => {
-            setAudioError("Audio playback fallback enabled");
-            startFallbackSynth();
-          });
+        if (!userPausedRef.current) {
+          audio.play().catch(() => {});
         }
       } else {
-        setAudioError("Audio file unavailable, fallback active");
-        startFallbackSynth();
+        setAudioError("Audio playback error");
       }
     };
 
@@ -103,38 +45,47 @@ export function useAudio() {
 
     audioRef.current = audio;
 
+    // Optional: unlock audio on first touch if not explicitly paused
+    const handleFirstGesture = () => {
+      if (audioRef.current && !userPausedRef.current && audioRef.current.paused) {
+        audioRef.current.play().catch(() => {});
+      }
+    };
+
+    window.addEventListener("click", handleFirstGesture, { once: true, passive: true });
+    window.addEventListener("touchstart", handleFirstGesture, { once: true, passive: true });
+
     return () => {
+      window.removeEventListener("click", handleFirstGesture);
+      window.removeEventListener("touchstart", handleFirstGesture);
       audio.removeEventListener("play", handlePlay);
       audio.removeEventListener("pause", handlePause);
       audio.removeEventListener("error", handleError);
       audio.pause();
-      stopFallbackSynth();
     };
-  }, [hasInteracted, startFallbackSynth, stopFallbackSynth]);
+  }, []);
 
   const play = useCallback(async () => {
-    setHasInteracted(true);
+    userPausedRef.current = false;
     if (!audioRef.current) return;
 
     try {
-      audioRef.current.muted = isMuted;
+      audioRef.current.muted = isMutedRef.current;
       await audioRef.current.play();
       setIsPlaying(true);
       setAudioError(null);
-    } catch {
-      // Browser autoplay policy or missing codec
-      startFallbackSynth();
-      setIsPlaying(true);
+    } catch (err) {
+      console.warn("Audio play blocked or waiting for user gesture:", err);
     }
-  }, [isMuted, startFallbackSynth]);
+  }, []);
 
   const pause = useCallback(() => {
+    userPausedRef.current = true;
     if (audioRef.current) {
       audioRef.current.pause();
     }
-    stopFallbackSynth();
     setIsPlaying(false);
-  }, [stopFallbackSynth]);
+  }, []);
 
   const togglePlay = useCallback(() => {
     if (isPlaying) {
@@ -147,17 +98,13 @@ export function useAudio() {
   const toggleMute = useCallback(() => {
     setIsMuted((prev) => {
       const nextMuted = !prev;
+      isMutedRef.current = nextMuted;
       if (audioRef.current) {
         audioRef.current.muted = nextMuted;
       }
-      if (nextMuted) {
-        stopFallbackSynth();
-      } else if (isPlaying) {
-        startFallbackSynth();
-      }
       return nextMuted;
     });
-  }, [isPlaying, startFallbackSynth, stopFallbackSynth]);
+  }, []);
 
   return {
     isPlaying,
@@ -169,4 +116,3 @@ export function useAudio() {
     toggleMute,
   };
 }
-

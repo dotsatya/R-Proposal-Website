@@ -15,12 +15,8 @@ import { HeartfeltLetter } from "@/components/proposal/HeartfeltLetter";
 import { Celebration } from "@/components/proposal/Celebration";
 
 export default function Home() {
-  const {
-    currentStep,
-    nextStep,
-    acceptProposal,
-    resetProposal,
-  } = useProposal();
+  const { currentStep, nextStep, acceptProposal, resetProposal } =
+    useProposal();
 
   const { isPlaying, isMuted, play, togglePlay, toggleMute } = useAudio();
 
@@ -158,10 +154,14 @@ export default function Home() {
           )}
         </AnimatePresence>
       </div>
-
       {/* Bottom Right Watermark */}
-      <div className="fixed bottom-[max(0.6rem,env(safe-area-inset-bottom))] right-[max(0.75rem,env(safe-area-inset-right))] z-40 pointer-events-none select-none text-[10px] xs:text-[11px] font-medium text-rose-300/60 tracking-wider drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)]">
-        <span>created by RANAJIT</span>
+      <div className="fixed bottom-3 right-3 z-40 flex flex-col items-end pointer-events-none select-none">
+        <span className="text-[10px] font-semibold tracking-wider text-rose-300/60 drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)]">
+          created by RANAJIT
+        </span>
+        <span className="text-[10px] font-medium tracking-wide text-rose-300/60 drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)]">
+          with endless love ❤️
+        </span>
       </div>
     </main>
   );
