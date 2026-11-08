@@ -36,12 +36,15 @@ const HEART_PALETTES = [
   { color: "rgba(225, 29, 72, 0.62)", glow: "rgba(225, 29, 72, 0.5)" },
 ];
 
+const HEART_PATH =
+  "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z";
+
 export function FloatingHearts() {
   const [ambientHearts, setAmbientHearts] = useState<HeartItem[]>([]);
   const [clickHearts, setClickHearts] = useState<ClickHeart[]>([]);
   const [isReducedMotion, setIsReducedMotion] = useState(false);
 
-  // Generate ambient floating hearts
+  // Generate more floating hearts
   useEffect(() => {
     const mediaQuery = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
@@ -52,112 +55,100 @@ export function FloatingHearts() {
     };
 
     updateMotionPreference();
-
     mediaQuery.addEventListener("change", updateMotionPreference);
 
-    const isMobile = window.innerWidth < 640;
+    const generateHearts = () => {
+      const isMobile = window.innerWidth < 640;
 
-    // Reduced heart count
-    const count = isMobile ? 7 : 12;
+      // More hearts across the screen
+      const count = isMobile ? 14 : 22;
 
-    const hearts: HeartItem[] = Array.from({ length: count }).map(
-      (_, i) => {
-        const palette = HEART_PALETTES[i % HEART_PALETTES.length];
+      const hearts: HeartItem[] = Array.from(
+        { length: count },
+        (_, i) => {
+          const palette =
+            HEART_PALETTES[
+              Math.floor(Math.random() * HEART_PALETTES.length)
+            ];
 
-        return {
-          id: i,
-          x: 4 + Math.random() * 92,
+          return {
+            id: i,
+            x: 2 + Math.random() * 96,
 
-          // Smaller heart sizes
-          size: Math.floor(
-            Math.random() * (isMobile ? 7 : 9)
-          ) + 8,
+            // Mix of tiny and medium hearts
+            size: Math.floor(Math.random() * (isMobile ? 12 : 17)) + 8,
 
-          // Slower animation
-          duration: Math.random() * 5 + 12,
-          delay: Math.random() * 8,
+            // Different speeds for natural movement
+            duration: Math.random() * 9 + 11,
+            delay: Math.random() * 15,
 
-          color: palette.color,
-          glow: palette.glow,
+            color: palette.color,
+            glow: palette.glow,
 
-          rotation: Math.floor(Math.random() * 40) - 20,
+            rotation: Math.floor(Math.random() * 60) - 30,
 
-          swayDistance:
-            (i % 2 === 0 ? 1 : -1) *
-            (10 + Math.random() * 12),
-        };
-      }
-    );
+            swayDistance:
+              (Math.random() > 0.5 ? 1 : -1) *
+              (12 + Math.random() * 25),
+          };
+        }
+      );
 
-    setAmbientHearts(hearts);
+      setAmbientHearts(hearts);
+    };
+
+    generateHearts();
 
     return () => {
-      mediaQuery.removeEventListener(
-        "change",
-        updateMotionPreference
-      );
+      mediaQuery.removeEventListener("change", updateMotionPreference);
     };
   }, []);
 
-  // Handle mouse clicks and mobile taps
+  // Click and tap heart burst
   const handleClick = useCallback((e: MouseEvent) => {
-    const clientX = e.clientX;
-    const clientY = e.clientY;
+    const burst: ClickHeart[] = Array.from({ length: 3 }, (_, i) => {
+      const palette =
+        HEART_PALETTES[
+          Math.floor(Math.random() * HEART_PALETTES.length)
+        ];
 
-    const burst: ClickHeart[] = Array.from({ length: 2 }).map(
-      (_, i) => ({
+      return {
         id: Date.now() + Math.random() + i,
-        x: clientX,
-        y: clientY,
+        x: e.clientX,
+        y: e.clientY,
+        color: palette.color,
+        size: 12 + Math.random() * 8,
+        dx: (Math.random() - 0.5) * 65,
+        dy: -(25 + Math.random() * 55),
+      };
+    });
 
-        color:
-          HEART_PALETTES[
-            Math.floor(Math.random() * HEART_PALETTES.length)
-          ].color,
-
-        // Smaller burst hearts
-        size: 12 + Math.random() * 5,
-
-        dx: (Math.random() - 0.5) * 45,
-        dy: -(25 + Math.random() * 35),
-      })
-    );
-
-    setClickHearts((prev) => [
-      ...prev.slice(-8),
-      ...burst,
-    ]);
+    setClickHearts((prev) => [...prev.slice(-12), ...burst]);
   }, []);
 
-  // Register click listener
   useEffect(() => {
-    window.addEventListener("click", handleClick, {
-      passive: true,
-    });
+    window.addEventListener("click", handleClick, { passive: true });
 
     return () => {
       window.removeEventListener("click", handleClick);
     };
   }, [handleClick]);
 
-  // Respect reduced motion preference
-  if (isReducedMotion) {
-    return null;
-  }
+  if (isReducedMotion) return null;
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-0 h-full w-full max-w-full overflow-hidden">
+    <div className="pointer-events-none fixed inset-0 z-0 h-full w-full overflow-hidden">
 
-      {/* Ambient Background Glow */}
+      {/* Romantic ambient glow */}
       <motion.div
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(circle at 50% 45%, rgba(255, 42, 122, 0.06) 0%, rgba(244, 63, 94, 0.02) 45%, transparent 75%)",
+            "radial-gradient(circle at 50% 45%, rgba(255,42,122,0.08) 0%, rgba(244,63,94,0.03) 45%, transparent 75%)",
         }}
         animate={{
-          opacity: [0.35, 0.55, 0.35],
-          scale: [0.98, 1.02, 0.98],
+          opacity: [0.35, 0.65, 0.35],
+          scale: [0.98, 1.04, 0.98],
         }}
         transition={{
           duration: 8,
@@ -166,31 +157,33 @@ export function FloatingHearts() {
         }}
       />
 
-      {/* Ambient Floating Hearts */}
+      {/* Floating hearts rising from the bottom */}
       {ambientHearts.map((h) => (
         <motion.div
           key={h.id}
           className="pointer-events-none absolute will-change-transform"
           style={{
             left: `${h.x}%`,
-            bottom: "-25px",
+            bottom: "-40px",
           }}
           animate={{
             y: ["0vh", "-115vh"],
             x: [0, h.swayDistance, -h.swayDistance * 0.5, 0],
             rotate: [
               h.rotation,
-              h.rotation + 25,
-              h.rotation - 10,
+              h.rotation + 30,
+              h.rotation - 20,
+              h.rotation,
             ],
-            scale: [0.85, 1.05, 0.9, 1.05, 0.85],
-            opacity: [0, 0.45, 0.55, 0.35, 0],
+            scale: [0.5, 1, 0.85, 1.15, 0.5],
+            opacity: [0, 0.5, 0.65, 0.4, 0],
           }}
           transition={{
             duration: h.duration,
             repeat: Infinity,
             delay: h.delay,
             ease: "easeInOut",
+            repeatDelay: 0.2,
           }}
         >
           <svg
@@ -199,15 +192,49 @@ export function FloatingHearts() {
             viewBox="0 0 24 24"
             fill={h.color}
             style={{
-              filter: `drop-shadow(0 0 5px ${h.glow})`,
+              filter: `drop-shadow(0 0 7px ${h.glow})`,
             }}
           >
-            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+            <path d={HEART_PATH} />
           </svg>
         </motion.div>
       ))}
 
-      {/* Tap / Click Burst Hearts */}
+      {/* Additional tiny hearts for depth */}
+      {Array.from({ length: 10 }, (_, i) => (
+        <motion.div
+          key={`tiny-${i}`}
+          className="absolute pointer-events-none"
+          style={{
+            left: `${(i * 37 + 13) % 100}%`,
+            bottom: "-20px",
+          }}
+          animate={{
+            y: ["0vh", "-110vh"],
+            x: [0, i % 2 === 0 ? 20 : -20, 0],
+            opacity: [0, 0.35, 0.5, 0],
+            scale: [0.5, 1, 0.7],
+            rotate: [0, i % 2 === 0 ? 35 : -35],
+          }}
+          transition={{
+            duration: 14 + (i % 5) * 3,
+            repeat: Infinity,
+            delay: i * 1.7,
+            ease: "easeInOut",
+          }}
+        >
+          <svg
+            width={7 + (i % 3) * 3}
+            height={7 + (i % 3) * 3}
+            viewBox="0 0 24 24"
+            fill={HEART_PALETTES[i % HEART_PALETTES.length].color}
+          >
+            <path d={HEART_PATH} />
+          </svg>
+        </motion.div>
+      ))}
+
+      {/* Click and tap heart bursts */}
       <AnimatePresence>
         {clickHearts.map((ch) => (
           <motion.div
@@ -223,14 +250,11 @@ export function FloatingHearts() {
               scale: [0.3, 1.15, 1.3],
               y: ch.y + ch.dy,
               x: ch.x - ch.size / 2 + ch.dx,
-              rotate: [
-                0,
-                ch.id % 2 === 0 ? 20 : -20,
-              ],
+              rotate: [0, ch.id % 2 === 0 ? 25 : -25],
             }}
             exit={{ opacity: 0 }}
             transition={{
-              duration: 0.9,
+              duration: 1,
               ease: "easeOut",
             }}
             onAnimationComplete={() => {
@@ -246,11 +270,10 @@ export function FloatingHearts() {
               viewBox="0 0 24 24"
               fill={ch.color}
               style={{
-                filter:
-                  "drop-shadow(0 0 6px rgba(255,42,122,0.65))",
+                filter: "drop-shadow(0 0 6px rgba(255,42,122,0.65))",
               }}
             >
-              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+              <path d={HEART_PATH} />
             </svg>
           </motion.div>
         ))}
